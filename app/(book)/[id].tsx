@@ -1,4 +1,5 @@
 import { FIRESTORE_DB } from "@/config/firebaseConfig";
+import { useAuth } from "@/context/AuthContext";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Stack, useGlobalSearchParams, useNavigation } from "expo-router";
 import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -15,6 +16,7 @@ import {
 const BookPage = () => {
   const { id } = useGlobalSearchParams();
   const [book, setBook] = useState<any>(null);
+  const { user } = useAuth();
   const navigation = useNavigation();
   useEffect(() => {
     if (!book) return;
@@ -34,13 +36,13 @@ const BookPage = () => {
 
   const toggleFavorite = () => {
     const isFavorite = book.favorite;
-    const fbDoc = doc(FIRESTORE_DB, `users/erkan/books/${id}`);
+    const fbDoc = doc(FIRESTORE_DB, `users/` + user?.uid + `/books/${id}`);
     updateDoc(fbDoc, { favorite: !isFavorite });
     setBook({ ...book, favorite: !isFavorite });
   };
 
   const removeBook = () => {
-    const fbDoc = doc(FIRESTORE_DB, `users/erkan/books/${id}`);
+    const fbDoc = doc(FIRESTORE_DB, `users/` + user?.uid + `/books/${id}`);
     deleteDoc(fbDoc);
     navigation.goBack();
   };
@@ -48,7 +50,9 @@ const BookPage = () => {
   useEffect(() => {
     if (!id) return;
     const load = async () => {
-      const fbDoc = await getDoc(doc(FIRESTORE_DB, `users/erkan/books/${id}`));
+      const fbDoc = await getDoc(
+        doc(FIRESTORE_DB, `users/` + user?.uid + `/books/${id}`)
+      );
       if (!fbDoc.exists()) return;
       const data = await fbDoc.data();
       console.log("data:", data);
@@ -67,7 +71,7 @@ const BookPage = () => {
             {book.volumeInfo.industryIdentifiers[0].identifier && (
               <Image
                 source={{
-                  uri: `https://covers.openlibrary.org/b/isbn/${book.volumeInfo.industryIdentifiers[0].identifier}-L.jpg`,
+                  uri: `https://covers.openlibrary.org/b/isbn/${book.volumeInfo.industryIdentifiers[0].identifier}-M.jpg`,
                 }}
                 style={styles.image}
                 resizeMode="contain"

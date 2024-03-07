@@ -1,9 +1,12 @@
 import { getBookByISBN } from "@/api/books";
 import { FIRESTORE_DB } from "@/config/firebaseConfig";
+import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Camera, CameraView } from "expo-camera/next";
 import { Stack, useRouter } from "expo-router";
 import {
+  CollectionReference,
+  DocumentData,
   addDoc,
   collection,
   onSnapshot,
@@ -25,9 +28,18 @@ const List = () => {
   const [scanned, setScanned] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [books, setBooks] = useState<any[]>([]);
+  // const[place, setPlace] = useState("") // TO-DO: Add a state for the place
   const router = useRouter();
+  const { user } = useAuth();
   useEffect(() => {
-    const booksCollection = collection(FIRESTORE_DB, "users", "erkan", "books");
+    const uuid = user?.uid;
+    if (!uuid) return;
+    const booksCollection = collection(
+      FIRESTORE_DB,
+      "users",
+      uuid,
+      "books"
+    ) as CollectionReference<DocumentData>;
 
     onSnapshot(booksCollection, (snapshot) => {
       const books = snapshot.docs.map((doc) => {
@@ -45,17 +57,9 @@ const List = () => {
 
     getCameraPermissions();
   }, []);
-  const handleBarCodeScanned = async ({
-    type,
-    data,
-  }: {
-    type: string;
-    data: string;
-  }) => {
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
     setScanned(true);
-    // alert(
-    //   `Bar code with type ${type} and data ${data} has been scanned!`
-    // );
+
     const code = data;
     alert(code);
     const bookData = await getBookByISBN(code);
@@ -66,6 +70,8 @@ const List = () => {
   };
 
   const addBook = async (book: any) => {
+    const uuid = user?.uid;
+    if (!uuid) return; // Add a check for undefined uuid
     const newBook = {
       bookId: book.id,
       volumeInfo: book.volumeInfo,
@@ -75,7 +81,12 @@ const List = () => {
       created: serverTimestamp(),
     };
     const db = await addDoc(
-      collection(FIRESTORE_DB, "users", "erkan", "books"),
+      collection(
+        FIRESTORE_DB,
+        "users",
+        uuid,
+        "books"
+      ) as CollectionReference<DocumentData>,
       newBook
     );
     console.log("Document written with ID: ", db);
@@ -99,7 +110,7 @@ const List = () => {
           {item.volumeInfo.industryIdentifiers[0].identifier && (
             <Image
               source={{
-                uri: `https://covers.openlibrary.org/b/isbn/${item.volumeInfo.industryIdentifiers[0].identifier}-L.jpg`,
+                uri: `https://covers.openlibrary.org/b/isbn/${item.volumeInfo.industryIdentifiers[0].identifier}-M.jpg`,
               }}
               style={{ width: 100, height: 100 }}
               resizeMode="contain"
@@ -161,6 +172,7 @@ const List = () => {
         </>
       )}
       <FlatList
+        style={{ backgroundColor: "#f8f8f8" }}
         data={books}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
