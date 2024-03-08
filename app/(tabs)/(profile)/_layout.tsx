@@ -22,6 +22,14 @@ export default function StackLayout() {
           title: "settings",
         }}
       />
+      <Stack.Screen
+        name="modal"
+        options={{
+          headerShown: false,
+          title: "modal",
+          presentation: "transparentModal",
+        }}
+      />
     </Stack>
   );
 }

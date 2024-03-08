@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import React, { ReactNode } from "react";
 import {
@@ -21,7 +20,7 @@ interface IButtonProps {
 }
 const AvatarButton = (props: IButtonProps) => {
   const { type, text, onPress, disabled, style, subtext, avatarLetter } = props;
-  const { user } = useAuth();
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -47,21 +46,31 @@ const AvatarButton = (props: IButtonProps) => {
         size={24}
         color={type === "contained" ? "#f4f4f4" : "#252525"}
       />
-      <View>
-        <Text
-          style={{
-            color: type === "contained" ? "#f4f4f4" : "#252525",
-            fontSize: 16,
-            fontWeight: "bold",
-            alignSelf: "flex-start",
-          }}
-        >
-          {text}
-        </Text>
-        <Text>{subtext}</Text>
-      </View>
-      <View style={headerStyles.avatar}>
-        <Text>{avatarLetter}</Text>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row-reverse",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 16,
+        }}
+      >
+        <View>
+          <Text
+            style={{
+              color: type === "contained" ? "#f4f4f4" : "#252525",
+              fontSize: 16,
+              fontWeight: "bold",
+              alignSelf: "flex-start",
+            }}
+          >
+            {text}
+          </Text>
+          <Text>{subtext}</Text>
+        </View>
+        <View style={headerStyles.avatar}>
+          <Text>{avatarLetter}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

@@ -1,6 +1,6 @@
 import { FIRESTORE_DB } from "@/config/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
-import { Ionicons } from "@expo/vector-icons";
+import Header from "@/core/header";
 import { router } from "expo-router";
 import {
   CollectionReference,
@@ -18,22 +18,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-function Header({ title }: { title: string }) {
-  const { user } = useAuth();
-  return (
-    <View style={headerStyles.container}>
-      <Text style={headerStyles.title}>{title}</Text>
-      <TouchableOpacity onPress={() => console.log("pressed search")}>
-        <Ionicons style={headerStyles.iconButton} name="search" size={24} />
-      </TouchableOpacity>
-
-      <View style={headerStyles.avatar}>
-        <Text>{user?.email?.[0]}</Text>
-      </View>
-    </View>
-  );
-}
 
 function Card({ title, book }: { title: string; book: any }) {
   return (
@@ -258,29 +242,5 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: "80%",
-  },
-});
-
-const headerStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 16,
-    padding: 28,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    flex: 1,
-  },
-  iconButton: {},
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    backgroundColor: "#BDBDBD",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
