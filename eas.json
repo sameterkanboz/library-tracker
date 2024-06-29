@@ -14,11 +14,6 @@
       "android": {
         "buildType": "apk"
       },
-      "ios": {
-        "simulator": false,
-        "buildType": "adhoc",
-        "provisioningProfilePath": "./path/to/your-adhoc-provisioning-profile.mobileprovision"
-      }
     }
   },
   "submit": {
